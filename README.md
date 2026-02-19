@@ -1,192 +1,70 @@
-# HouseHunt: Finding Your Perfect Rental Home
+# Getting Started with Create React App
 
-A MERN stack application for renting properties.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Prerequisites
+## Available Scripts
 
-Before setting up the application, ensure you have the following installed:
+In the project directory, you can run:
 
-### Node.js and npm
-- Node.js: JavaScript runtime for server-side development.
-- Download: [https://nodejs.org/en/download/](https://nodejs.org/en/download/)
-- Installation: [https://nodejs.org/en/download/package-manager/](https://nodejs.org/en/download/package-manager/)
+### `npm start`
 
-### Express.js
-- Web framework for Node.js.
-- Install: `npm install express`
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-### MongoDB
-- NoSQL database for data storage.
-- Download: [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community)
-- Installation: [https://docs.mongodb.com/manual/installation/](https://docs.mongodb.com/manual/installation/)
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
 
-### Moment.js
-- Library for date/time manipulation.
-- Install: `npm install moment`
-- Docs: [https://momentjs.com/](https://momentjs.com/)
+### `npm test`
 
-### React.js
-- Library for building user interfaces.
-- Install via Create React App: [https://reactjs.org/docs/create-a-new-react-app.html](https://reactjs.org/docs/create-a-new-react-app.html)
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### Antd
-- React UI library for components.
-- Install: `npm install antd`
-- Docs: [https://ant.design/docs/react/introduce](https://ant.design/docs/react/introduce)
+### `npm run build`
 
-### HTML, CSS, JavaScript
-- Basic knowledge required for development.
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-### Database Connectivity
-- Use Mongoose for MongoDB connection: [https://www.section.io/engineering-education/nodejs-mongoosejs-mongodb/](https://www.section.io/engineering-education/nodejs-mongoosejs-mongodb/)
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-## Features
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-- User registration and authentication (Renters, Owners, Admins)
-- Property listings with search and filters
-- Booking requests and management
-- Admin approval for owners
-- Real-time messaging (placeholder)
+### `npm run eject`
 
-## Tech Stack
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-- Frontend: React, Antd, Axios
-- Backend: Express.js, MongoDB, JWT Authentication
-- Database: MongoDB
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-## Setup
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-1. Clone the repository
-2. Install dependencies for both client and server
-3. Set up MongoDB
-4. Run the application
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-### Backend
+## Learn More
 
-```bash
-cd server
-npm install
-npm run dev
-```
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-### Backend setup (detailed)
+To learn React, check out the [React documentation](https://reactjs.org/).
 
-- Copy environment example and set secure values:
+### Code Splitting
 
-```bash
-cd server
-copy .env.example .env
-# then edit .env and set MONGO_URI and JWT_SECRET
-```
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-- Start the server (development with hot reload):
+### Analyzing the Bundle Size
 
-```bash
-npm run dev
-```
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-- The server exposes REST endpoints under `/api/*` (auth, properties, bookings, admin).
+### Making a Progressive Web App
 
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Frontend
+### Advanced Configuration
 
-```bash
-cd frontend
-npm install
-npm start
-```
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Frontend setup (detailed)
+### Deployment
 
-- Create the frontend folder and initialize a React app (if not present):
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-```bash
-cd frontend
-npx create-react-app .
-```
+### `npm run build` fails to minify
 
-- Install the UI libraries used in this project:
-
-```bash
-npm install react bootstrap @mui/material @emotion/react @emotion/styled axios moment antd mdb-react-ui-kit react-bootstrap
-```
-
-- Start the frontend dev server:
-
-```bash
-npm start
-```
-
-Notes: The frontend directory in this repository is `frontend/` (not `client/`).
-
-## Environment Variables
-
-Create a .env file in server directory:
-
-```
-MONGO_URI=mongodb://localhost:27017/househunt
-JWT_SECRET=your_secret_key
-```
-
-## Usage
-
-- Register as a renter or owner
-- Browse properties
-- Send booking requests
-- Owners can manage properties
-- Admins approve owners
-
-**API Reference**
-
-- **Health:** `GET /api/health` — public: returns service status `{ status, timestamp }`.
-
-- **Auth**:
-	- **POST /api/auth/register** — Register a new user.
-		- Body: `{ name, email, password, type }` where `type` is `renter` or `owner`.
-		- Owners are created with `isApproved: false` and require admin approval.
-		- Response: `201` on success.
-	- **POST /api/auth/login** — Login and receive a JWT.
-		- Body: `{ email, password }`
-		- Response: `{ token, user }` (use token in `Authorization: Bearer <token>`).
-
-- **Properties** (`/api/properties`):
-	- **GET /** — Public list. Optional query params: `location`, `type`, `minRent`, `maxRent`.
-	- **GET /:id** — Public single property details.
-	- **POST /** — Create property (requires `Authorization` header).
-		- Requires owner account with `isApproved: true`.
-		- Body example: `{ propType, address, amount, images, additionalInfo }`.
-	- **PUT /:id** — Update property (owner only).
-	- **DELETE /:id** — Delete property (owner only).
-
-- **Bookings** (`/api/bookings`) — Authenticated endpoints:
-	- **GET /** — Returns bookings where requester is renter or owner.
-	- **POST /** — Create booking: body `{ propertyId, message }` creates `status: 'pending'`.
-	- **PUT /:id** — Owner updates booking status. Body: `{ status: 'approved'|'rejected' }`.
-
-- **Admin** (`/api/admin`) — Admin-only endpoints:
-	- **GET /pending-owners** — List owner applicants awaiting approval.
-	- **PUT /approve-owner/:id** — Approve an owner account.
-
-**Authentication**
-- Protected endpoints require the header: `Authorization: Bearer <token>`.
-
-**Quick examples**
-
-- Login to get a token:
-
-```bash
-curl -X POST http://localhost:5000/api/auth/login \
-	-H "Content-Type: application/json" \
-	-d '{"email":"alice@example.com","password":"password"}'
-```
-
-- Create a booking (authenticated):
-
-```bash
-curl -X POST http://localhost:5000/api/bookings \
-	-H "Content-Type: application/json" \
-	-H "Authorization: Bearer $TOKEN" \
-	-d '{"propertyId":"<PROPERTY_ID>","message":"I\'m interested"}'
-```
-
-For implementation details see the route handlers in `server/routes/` and schemas in `server/models/`.
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
