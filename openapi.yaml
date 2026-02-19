@@ -1,0 +1,427 @@
+openapi: 3.0.3
+info:
+  title: HouseHunt API
+  version: 1.0.0
+  description: OpenAPI specification for the HouseHunt rental platform (auth, properties, bookings, admin)
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/health:
+    get:
+      summary: Service health
+      tags: [Health]
+      responses:
+        '200':
+          description: Service status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+              examples:
+                ok:
+                  value: { status: "ok", timestamp: "2026-02-19T00:00:00Z" }
+
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              example: { message: "User registered" }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/auth/login:
+    post:
+      summary: Login and receive JWT
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required: [email, password]
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+              examples:
+                success:
+                  value: { token: "<jwt>", user: { "name": "Alice", "email": "alice@example.com", "type": "renter" } }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/properties:
+    get:
+      summary: List properties (public)
+      tags: [Properties]
+      parameters:
+        - in: query
+          name: location
+          schema:
+            type: string
+        - in: query
+          name: type
+          schema:
+            type: string
+        - in: query
+          name: minRent
+          schema:
+            type: integer
+        - in: query
+          name: maxRent
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Array of properties
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Property'
+
+    post:
+      summary: Create property (owner only)
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProperty'
+      responses:
+        '201':
+          description: Property created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/properties/{id}:
+    get:
+      summary: Get property by ID
+      tags: [Properties]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Property details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update property (owner only)
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProperty'
+      responses:
+        '200':
+          description: Updated property
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      summary: Delete property (owner only)
+      tags: [Properties]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              example: { message: "Property deleted" }
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/bookings:
+    get:
+      summary: Get bookings for user (authenticated)
+      tags: [Bookings]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Array of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+
+    post:
+      summary: Create a booking request
+      tags: [Bookings]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                propertyId:
+                  type: string
+                message:
+                  type: string
+              required: [propertyId]
+      responses:
+        '201':
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/bookings/{id}:
+    put:
+      summary: Update booking status (owner only)
+      tags: [Bookings]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, approved, rejected]
+      responses:
+        '200':
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/admin/pending-owners:
+    get:
+      summary: List owner applicants (admin only)
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Array of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/admin/approve-owner/{id}:
+    put:
+      summary: Approve owner (admin only)
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner approved
+          content:
+            application/json:
+              example: { message: "Owner approved" }
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        type:
+          type: string
+          enum: [renter, owner, admin]
+        isApproved:
+          type: boolean
+
+    NewUser:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+          enum: [renter, owner]
+      required: [name, email, password]
+
+    Property:
+      type: object
+      properties:
+        _id:
+          type: string
+        userID:
+          $ref: '#/components/schemas/User'
+        propType:
+          type: string
+        address:
+          type: string
+        amount:
+          type: number
+        isAvailable:
+          type: boolean
+        images:
+          type: array
+          items:
+            type: string
+
+    NewProperty:
+      type: object
+      properties:
+        propType:
+          type: string
+        address:
+          type: string
+        amount:
+          type: number
+        images:
+          type: array
+          items:
+            type: string
+      required: [propType, address, amount]
+
+    Booking:
+      type: object
+      properties:
+        _id:
+          type: string
+        propertyId:
+          $ref: '#/components/schemas/Property'
+        userId:
+          $ref: '#/components/schemas/User'
+        ownerId:
+          $ref: '#/components/schemas/User'
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        message:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          example: { error: "Bad request" }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          example: { error: "Invalid credentials" }
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          example: { error: "Not authorized" }
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          example: { error: "Not found" }
